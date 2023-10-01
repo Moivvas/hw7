@@ -50,7 +50,9 @@ GROUP BY gr.name, d.name
 ORDER BY average_grade DESC;'''
 
 def select_4():
-    r = session.query(func.round(func.avg(Grade.grade), 1).label("All_groups_avg_grade")).select_from(Grade).all()
+    r = session.query(func.round(func.avg(Grade.grade), 1).label("All_groups_avg_grade"))\
+        .select_from(Grade)\
+        .all()
     return r
 '''
 SELECT ROUND(AVG(g.grade), 1) as average_grade
@@ -58,7 +60,12 @@ FROM grades g;
 '''
 
 def select_5(teacher_id: int):
-    r = session.query(Teacher.fullname, Discipline.name).select_from(Discipline).join(Teacher).filter(Teacher.id == teacher_id).all()
+    r = session.query(Teacher.fullname, \
+                      Discipline.name)\
+                .select_from(Discipline)\
+                .join(Teacher)\
+                .filter(Teacher.id == teacher_id)\
+                .all()
     return r
 
 '''
@@ -69,7 +76,12 @@ WHERE t.id = 4;
 '''
 
 def select_6(group_id: int):
-    r = session.query(Student.fullname, Group.name).select_from(Student).join(Group).filter(Group.id == group_id).all()
+    r = session.query(Student.fullname,\
+                      Group.name)\
+                .select_from(Student)\
+                .join(Group)\
+                .filter(Group.id == group_id)\
+                .all()
     return r
 
 '''
@@ -80,8 +92,16 @@ WHERE g.id = 2;
 '''
 
 def select_7(group_id: int, discipline_id: int):
-    r = session.query(Student.fullname, Group.name, Discipline.name, Grade.grade)\
-    .select_from(Grade).join(Discipline).join(Student).join(Group).where(and_(Group.id == group_id, Discipline.id == discipline_id)).all()
+    r = session.query(Student.fullname,\
+                      Group.name,\
+                      Discipline.name,\
+                      Grade.grade)\
+                .select_from(Grade)\
+                .join(Discipline)\
+                .join(Student)\
+                .join(Group)\
+                .where(and_(Group.id == group_id, Discipline.id == discipline_id))\
+                .all()
     return r
 
 '''
@@ -93,8 +113,16 @@ JOIN disciplines d ON d.id = gr.discipline_id
 WHERE g.id = 2 AND d.id =2;
 '''
 def select_8(teacher_id: int):
-    r = session.query(Teacher.fullname, Discipline.name, func.round(func.avg(Grade.grade), 1).label("average_grade"))\
-        .select_from(Grade).join(Discipline).join(Teacher).filter(Teacher.id == teacher_id).group_by(Teacher.fullname, Discipline.name).order_by(desc("average_grade")).all()
+    r = session.query(Teacher.fullname,\
+                      Discipline.name,\
+                      func.round(func.avg(Grade.grade), 1).label("average_grade"))\
+                .select_from(Grade)\
+                .join(Discipline)\
+                .join(Teacher)\
+                .filter(Teacher.id == teacher_id)\
+                .group_by(Teacher.fullname, Discipline.name)\
+                .order_by(desc("average_grade"))\
+                .all()
     return r
 
 '''
@@ -108,8 +136,14 @@ ORDER BY average_grade DESC;
 '''
 
 def select_9(student_id: int):
-    r = session.query(Student.fullname, Discipline.name)\
-        .select_from(Grade).join(Discipline).join(Student).filter(Student.id == student_id).group_by(Student.fullname, Discipline.name).all()
+    r = session.query(Student.fullname, \
+                      Discipline.name)\
+                .select_from(Grade)\
+                .join(Discipline)\
+                .join(Student)\
+                .filter(Student.id == student_id)\
+                .group_by(Student.fullname, Discipline.name)\
+                .all()
     return r
 
 '''
@@ -122,8 +156,16 @@ GROUP BY s.fullname, d.name;
 '''
 
 def select_10(student_id: int, teacher_id: int):
-    r = session.query(Teacher.fullname, Discipline.name, Student.fullname)\
-        .select_from(Grade).join(Student).join(Discipline).join(Teacher).filter(and_(Student.id == student_id, Teacher.id == teacher_id)).group_by(Teacher.fullname, Discipline.name, Student.fullname).all()
+    r = session.query(Teacher.fullname, \
+                      Discipline.name, \
+                      Student.fullname)\
+                .select_from(Grade)\
+                .join(Student)\
+                .join(Discipline)\
+                .join(Teacher)\
+                .filter(and_(Student.id == student_id, Teacher.id == teacher_id))\
+                .group_by(Teacher.fullname, Discipline.name, Student.fullname)\
+                .all()
     return r
 
 
@@ -138,8 +180,16 @@ GROUP BY d.name;
 '''
 
 def select_11(student_id: int, teacher_id: int):
-    r = session.query(Teacher.fullname, func.round(func.avg(Grade.grade), 1).label("average_grade"), Student.fullname)\
-        .select_from(Grade).join(Student).join(Discipline).join(Teacher).filter(and_(Student.id == student_id, Teacher.id == teacher_id)).group_by(Teacher.fullname, Student.fullname).all()
+    r = session.query(Teacher.fullname, \
+                      func.round(func.avg(Grade.grade), 1).label("average_grade"), \
+                      Student.fullname)\
+                .select_from(Grade)\
+                .join(Student)\
+                .join(Discipline)\
+                .join(Teacher)\
+                .filter(and_(Student.id == student_id, Teacher.id == teacher_id))\
+                .group_by(Teacher.fullname, Student.fullname)\
+                .all()
     return r
 
 '''
@@ -154,9 +204,13 @@ GROUP BY t.fullname, s.fullname;
 
 
 def select_12(discipline_id, group_id):
-    subquery = (select(Grade.date_of).join(Student).join(Group).where(
-        and_(Grade.discipline_id == discipline_id, Group.id == group_id)
-    ).order_by(desc(Grade.date_of)).limit(1).scalar_subquery())
+    subquery = (select(Grade.date_of)\
+                .join(Student)\
+                .join(Group)\
+                .where(and_(Grade.discipline_id == discipline_id, Group.id == group_id))\
+                .order_by(desc(Grade.date_of))\
+                .limit(1)\
+                .scalar_subquery())
 
     r = session.query(Discipline.name,
                       Student.fullname,
